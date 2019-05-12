@@ -1,0 +1,67 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "useJSXTextNode": true,
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "env": {
+    "node": true,
+    "es6": true,
+    "browser": true,
+    "jest/globals": true
+  },
+  "plugins": [
+    "react",
+    "redux-saga",
+    "react-hooks",
+    "@typescript-eslint",
+    "prettier",
+    "jest"
+  ],
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "prettier/@typescript-eslint",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:redux-saga/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "rules": {
+    "no-console": "warn",
+    "no-unused-vars": "warn",
+    "react/display-name": "off",
+    "react/prop-types": [
+      "warn",
+      {
+        "skipUndeclared": true
+      }
+    ],
+    "react/prefer-stateless-function": [
+      "off",
+      {
+        "ignorePureComponents": true
+      }
+    ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-member-accessibility": "off",
+    "@typescript-eslint/prefer-interface": "off",
+    "@typescript-eslint/no-use-before-define": "off"
+  },
+  "globals": {
+    "DEV_MODE": "readonly",
+    "Raven": "readonly"
+  }
+}

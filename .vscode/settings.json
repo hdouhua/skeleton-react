@@ -1,0 +1,23 @@
+{
+    "javascript.implicitProjectConfig.experimentalDecorators": true,
+    "javascript.preferences.quoteStyle": "single",
+    "javascript.referencesCodeLens.enabled": true,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "typescript.referencesCodeLens.enabled": true,
+    "typescript.implementationsCodeLens.enabled": true,
+    "editor.tabSize": 2,
+    "eslint.autoFixOnSave": true,
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        {
+            "language": "typescript",
+            "autoFix": true
+        },
+        {
+            "language": "typescriptreact",
+            "autoFix": true
+        }
+    ],
+    "editor.formatOnSave": true
+}

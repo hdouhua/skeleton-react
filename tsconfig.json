@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "allowJs": true,
+    "jsx": "react",
+    "outDir": "./.tmp",
+    "removeComments": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types"
+    ],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+  },
+  "exclude": [
+    "**/dist/**",
+    "**/node_modules/**",
+    "./public/**",
+    "./types/**",
+    "./**/*.js",
+    "./**/*.jsx",
+    "./**/*.json",
+  ]
+}
