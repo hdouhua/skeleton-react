@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
+import { connect } from 'react-redux'
 import { ActionCreators } from '../../actions/Config'
 import { locale as currentLocale, changeLocale } from '../../utils/i18n'
 
 type Props = {
-  store?: any
+  changeLocaleAction: (locale: string) => {}
 }
 
-export default function LocaleSelector({ store }: Props) {
+function LocaleSelector({ changeLocaleAction }: Props) {
   const [locale, setLocale] = useState(currentLocale)
   const locales: Record<string, string> = {
     en: 'English',
@@ -19,10 +20,11 @@ export default function LocaleSelector({ store }: Props) {
   //   console.log(locale)
   // })
 
-  function onChangeLocale(locale: string) {
+  async function onChangeLocale(locale: string) {
     setLocale(locale)
-    changeLocale(locale)
-    if (store) return store.dispatch(ActionCreators.changeLocale(locale))
+    // async set locale in i18n
+    await changeLocale(locale)
+    changeLocaleAction(locale)
   }
 
   return (
@@ -37,3 +39,12 @@ export default function LocaleSelector({ store }: Props) {
     </select>
   )
 }
+
+export default connect(
+  null,
+  dispatch => {
+    return {
+      changeLocaleAction: (locale: string) => dispatch(ActionCreators.changeLocale(locale))
+    }
+  }
+)(LocaleSelector)
