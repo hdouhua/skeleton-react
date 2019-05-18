@@ -2,24 +2,29 @@
 // import { fromJS } from 'immutable'
 
 //TODO: dynamically load locales, to think about cdn
-const locales = { en: {}, hans: {}, hant: {} }
 const DEFAULT_LOCALE = 'en'
+const locales = { en: {}, hans: {}, hant: {} }
 const LocaleMap = new Map([
   ['hans', code => '1,zh-cn,zh-hans,zh,hans,cn,chs,cs'.includes(code)],
   ['hant', code => '2,zh-tw,zh-hant,zht,hant,cht,ct'.includes(code)],
   [DEFAULT_LOCALE, () => DEFAULT_LOCALE]
 ])
-const getResource = lang => {
+/**
+ * load resource for specify locale
+ * @param {string} lang locale
+ * @returns Promise
+ */
+const loadResource = lang => {
   let res = locales[lang]
   if (Object.getOwnPropertyNames(res).length === 0) {
     return import(`../locales/${lang}`)
       .then(data => {
-        // console.debug(data.default)
+        console.debug(`${lang} loaded`)
         return data.default
       })
       .catch(err => {
-        console.error(err)
-        return {}
+        console.error(`cannot support locale [${lang}]`, err)
+        return locales[DEFAULT_LOCALE]
       })
   }
   return res
@@ -34,7 +39,7 @@ let locale = localStorage.getItem('lang') || DEFAULT_LOCALE
 let resource = {}
 
 /**
- * change current locale
+ * async function to change current locale
  * @param {String} lang lang code
  */
 const changeLocale = async lang => {
@@ -46,7 +51,7 @@ const changeLocale = async lang => {
     }
   }
   locale = lang
-  resource = await getResource(locale)
+  resource = await loadResource(locale)
   locales[locale] = resource
   localStorage.setItem('lang', lang)
 }
@@ -77,7 +82,7 @@ const t = (key, ...args) => {
 }
 
 /**
- * almost same to t, can dynamically translate by locale
+ * almost same to t, it can dynamically translate by locale
  * @param {string} lang locale name
  */
 const t2 = lang => {
