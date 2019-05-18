@@ -1,0 +1,9 @@
+.tmp/
+.vscode/
+coverage
+dist
+node_modules/
+public/
+types/
+/*.js
+/*.json
