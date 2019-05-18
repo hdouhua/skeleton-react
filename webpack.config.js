@@ -2,7 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-// const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
 const NodeEnv = process.env.NODE_ENV || 'development'
 const isDevMode = NodeEnv === 'development'
@@ -26,7 +26,8 @@ module.exports = {
     main: './src/index.tsx'
   },
   output: {
-    publicPath: '/',
+    publicPath: isDevMode ? '/' : `${CdnUrl}static/`,
+    path: path.resolve(__dirname, 'dist/static'),
     filename: isDevMode ? '[name]-[hash:7].js' : '[name]-[contenthash:7].js'
   },
   module: {
@@ -38,7 +39,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [isDevMode ? 'style-loader' : MiniCssExtractPlugin.loader, 'css-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
       }
     ]
   },
@@ -57,6 +58,14 @@ module.exports = {
       filename: isDevMode ? '[name].css' : '[name]-[contenthash:7].css'
       // chunkFilename: isDevMode ? '[id].css' : '[name]-[contenthash:7].css'
     }),
+    new OptimizeCssAssetsPlugin({
+      assetNameRegExp: /\.css$/g,
+      cssProcessor: require('cssnano'),
+      cssProcessorPluginOptions: {
+        preset: ['default', { discardComments: { removeAll: true } }]
+      },
+      canPrint: true
+    }),
     new HtmlWebpackPlugin({
       inject: true,
       templateParameters: {
@@ -64,7 +73,7 @@ module.exports = {
         asset_version: AssetVersion
       },
       template: path.resolve(__dirname, './src/template.html'),
-      filename: './index.html',
+      filename: isDevMode ? './index.html' : '../index.html',
       minify: {
         collapseWhitespace: true,
         removeComments: true,
@@ -76,14 +85,6 @@ module.exports = {
   ],
   devtool: isDevMode ? 'cheap-module-source-map' : 'none',
   optimization: {
-    // minimizer: [
-    //   new UglifyJsPlugin({
-    //     cache: true,
-    //     parallel: true,
-    //     sourceMap: true // set to true if you want JS source maps
-    //   }),
-    //   new OptimizeCSSAssetsPlugin({})
-    // ],
     splitChunks: {
       cacheGroups: {
         vendor: {
