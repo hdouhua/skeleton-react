@@ -2,5 +2,5 @@
   "singleQuote": true,
   "semi": false,
   "printWidth": 125,
-  "bracketSpacing": true
+  "parser": "typescript" 
 }

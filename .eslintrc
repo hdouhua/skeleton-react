@@ -23,11 +23,11 @@
     "jest"
   ],
   "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "prettier/@typescript-eslint",
     "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
     "plugin:redux-saga/recommended",
+    "prettier/@typescript-eslint",
     "plugin:prettier/recommended"
   ],
   "settings": {
@@ -36,8 +36,14 @@
     }
   },
   "rules": {
+    "prettier/prettier": [
+      "error"
+    ],
     "no-console": "warn",
     "no-unused-vars": "warn",
+    "space-before-function-paren": [
+      "off"
+    ],
     "react/display-name": "off",
     "react/prop-types": [
       "warn",

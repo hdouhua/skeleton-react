@@ -1,3 +1,5 @@
+.tmp/
+.vscode/
 coverage
 dist
 node_modules/
