@@ -9,6 +9,20 @@ interface Window {
 }
 
 /**
+ * extend Navigator in lib.d.ts
+ */
+interface Navigator {
+  userLanguage: string;
+}
+
+/**
+ * extend String lib.es5.d.ts
+ */
+interface String {
+  format: any;
+}
+
+/**
  * @see {@link https://docs.sentry.io/platforms/javascript/?platform=browsernpm}
  */
 declare class Sentry {

@@ -3,11 +3,18 @@
 
 //TODO: dynamically load locales, to think about cdn
 const DEFAULT_LOCALE = 'en'
+/**
+ * @type {Object} locales dictionary
+ */
 const locales = { en: {}, hans: {}, hant: {} }
+/**
+ * @typedef {((code: string) => boolean)} IsLocale
+ * @type {Map<string, IsLocale>} LocalMap
+ */
 const LocaleMap = new Map([
   ['hans', code => '1,zh-cn,zh-hans,zh,hans,cn,chs,cs'.includes(code)],
   ['hant', code => '2,zh-tw,zh-hant,zht,hant,cht,ct'.includes(code)],
-  [DEFAULT_LOCALE, () => DEFAULT_LOCALE]
+  [DEFAULT_LOCALE, () => true]
 ])
 /**
  * load resource for specify locale
@@ -56,6 +63,12 @@ const changeLocale = async lang => {
   localStorage.setItem('lang', lang)
 }
 
+/**
+ * core translator
+ * @param {object} res
+ * @param {string} key
+ * @param  {...any} args
+ */
 function _t(res, key, ...args) {
   let msg = res[key]
   if (msg === undefined) {
@@ -84,6 +97,7 @@ const t = (key, ...args) => {
 /**
  * almost same to t, it can dynamically translate by locale
  * @param {string} lang locale name
+ * @returns {(key:string, args: any[])=>{}}
  */
 const t2 = lang => {
   // use dynamical resouce instead of global
@@ -94,11 +108,15 @@ const t2 = lang => {
 }
 
 if (!String.prototype.format) {
+  /**
+   * @param {any[][]} args
+   */
   String.prototype.format = function(...args) {
     if (typeof args[0] === 'object') {
       // args is a json object
       args = args[0]
     }
+    //@ts-ignore
     return this.replace(/\{(\d+|\w+)\}/g, function(m, i) {
       return args[i]
     })
