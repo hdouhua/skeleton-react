@@ -9,32 +9,35 @@ import rootSaga from '../sagas'
 /* eslint-disable no-console,no-unused-vars */
 /**
  * logger middleware for redux
- * @param {any} store redux store
+ * @param {import('redux').Store} store redux store
+ * @type {import('redux-saga').SagaMiddleware}
  */
 const logger = ({ getState }) => next => action => {
   if (action.type === '@@router/LOCATION_CHANGE') {
     return next(action)
   }
   console.group(action.type)
-  console.info('%cdispatching', 'color:deepskyblue;font-weight:bold;', action)
+  console.debug('%cdispatching', 'color:deepskyblue;font-weight:bold;', action)
   console.time('elapsed')
   let result = next(action)
+  let newState = getState()[action.type.split('/')[0]] || getState()
   console.timeEnd('elapsed')
-  console.log('%cnext-state', 'color:limegreen;font-weight:bold;', getState())
-  console.groupEnd(action.type)
+  console.debug('%cnext-state', 'color:limegreen;font-weight:bold;', newState)
+  console.groupEnd()
   return result
 }
 /**
  * crash reporter middleware for redux
- * @requires module: Raven.js
- * @param {any} store redux store
+ * @requires module: sentry/browser
+ * @param {import('redux').Store} store redux store
+ * @type {import('redux-saga').SagaMiddleware}
  */
 const crashReporter = ({ getState }) => next => action => {
   try {
     return next(action)
   } catch (err) {
     console.error('Caught an exception!', err)
-    Raven.captureException(err, {
+    Sentry.captureException(err, {
       extra: {
         action,
         state: getState()
@@ -45,6 +48,11 @@ const crashReporter = ({ getState }) => next => action => {
 }
 /* eslint-enable no-console,no-unused-vars */
 
+/**
+ * create & config redux store
+ * @param {import('history').History} history browser history
+ * @param {Object} initialState initial state
+ */
 export default function configureStore(history, initialState) {
   const rootReducer = combineReducers({
     // router: connectRouter(history),
@@ -60,7 +68,7 @@ export default function configureStore(history, initialState) {
 
   if (DEV_MODE) {
     middlewares.push(logger)
-    if (typeof Raven !== 'undefined') {
+    if (typeof Sentry !== 'undefined') {
       middlewares.push(crashReporter)
     }
   }
