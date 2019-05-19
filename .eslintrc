@@ -68,6 +68,7 @@
   },
   "globals": {
     "DEV_MODE": "readonly",
-    "Raven": "readonly"
+    "SENTRY_DSN": "readonly",
+    "Sentry": "readonly"
   }
 }

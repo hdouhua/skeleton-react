@@ -9,13 +9,20 @@ interface ErrorState {
 export default class extends Component<any, ErrorState, any> {
   constructor(props: any) {
     super(props)
-    this.state = { hasError: false, error: undefined, info: undefined }
+    this.state = { hasError: false }
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo): void {
-    // log error to crash report => (error, info)
-    /* eslint-disable-next-line */
-    console.log('My error on React', error, info)
+    if (!DEV_MODE) {
+      // log error to crash report => (error, info)
+      //@ts-ignore
+      Sentry.withScope(scope => {
+        const eventId = scope.setExtras(info)
+        Sentry.captureException(error)
+        // eslint-disable-next-line no-console
+        console.debug(`event-id: ${eventId}`)
+      })
+    }
 
     this.setState({
       hasError: true,
@@ -25,9 +32,8 @@ export default class extends Component<any, ErrorState, any> {
   }
 
   render() {
-    if (this.state.hasError) {
+    if (this.state.hasError && DEV_MODE) {
       // render any custom fallback UI here
-
       return (
         <div style={{ margin: '1em' }}>
           <h2>Something went wrong.</h2>

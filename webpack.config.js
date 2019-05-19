@@ -8,6 +8,16 @@ const NodeEnv = process.env.NODE_ENV || 'development'
 const isDevMode = NodeEnv === 'development'
 const CdnUrl = process.env.CDN_URL || '/'
 const AssetVersion = process.env.ASSET_VERSION || new Date().getTime()
+const SentryDsn = 'https://1e2a7724377b4b8b833cc06028a3e5a2@sentry.io/1462882'
+
+if (!(isDevMode || process.argv.includes('--json'))) {
+  console.debug('--------------env--------------')
+  console.debug('node env:', NodeEnv)
+  console.debug('cdn url:', CdnUrl)
+  console.debug('asset version:', AssetVersion)
+  console.debug('sentry dsn:', SentryDsn)
+  console.debug('--------------env--------------')
+}
 
 module.exports = {
   mode: NodeEnv,
@@ -26,7 +36,7 @@ module.exports = {
     main: './src/index.tsx'
   },
   output: {
-    publicPath: isDevMode ? '/' : `${CdnUrl}static/`,
+    // publicPath: isDevMode ? '/' : `${CdnUrl}static/`,
     path: path.resolve(__dirname, 'dist/static'),
     filename: isDevMode ? '[name]-[hash:7].js' : '[name]-[contenthash:7].js'
   },
@@ -52,7 +62,8 @@ module.exports = {
     new webpack.DefinePlugin({
       CDN_URL: JSON.stringify(CdnUrl),
       ASSET_VERSION: JSON.stringify(AssetVersion),
-      DEV_MODE: isDevMode
+      DEV_MODE: isDevMode,
+      SENTRY_DSN: JSON.stringify(SentryDsn)
     }),
     new MiniCssExtractPlugin({
       filename: isDevMode ? '[name].css' : '[name]-[contenthash:7].css'
@@ -70,7 +81,8 @@ module.exports = {
       inject: true,
       templateParameters: {
         cdn_url: CdnUrl,
-        asset_version: AssetVersion
+        asset_version: AssetVersion,
+        sentry_sdk: SentryDsn ? '<script src="https://browser.sentry-cdn.com/5.2.1/bundle.min.js" crossorigin="anonymous"></script>' : ''
       },
       template: path.resolve(__dirname, './src/template.html'),
       filename: isDevMode ? './index.html' : '../index.html',
