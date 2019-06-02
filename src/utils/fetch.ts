@@ -1,17 +1,9 @@
 /* eslint-disable no-console */
-/**
- * @extends {Error}
- */
+
 class FetchError extends Error {
-  /**
-   * @param {string|undefined} message error message
-   */
-  constructor(message) {
-    super(message)
-    /** @type {Response | undefined} */
-    this.response = undefined
-  }
+  public response?: Response
 }
+
 /**
  * default options, please refer to 
  * @link https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
@@ -35,7 +27,7 @@ class FetchError extends Error {
 const defaultOptions = {
   mode: 'cors',
   cache: 'no-cache',
-  credentials: 'same-origin'
+  credentials: 'omit'
 }
 
 /**
@@ -43,7 +35,7 @@ const defaultOptions = {
  * @param {Response} response
  * @throws {FetchError} fetch request failed
  */
-function checkStatus(response) {
+function checkStatus(response: Response) {
   //TODO: handle more
   if (response.status >= 200 && response.status < 300) {
     return response
@@ -59,66 +51,70 @@ function checkStatus(response) {
  * @param {Object} options request options
  * @see {@link defaultOptions}
  */
-function request(url, options) {
-  //TODO: handle more here
-
-  return fetch(url, options)
+function request(input: Request) {
+  return fetch(input)
     .then(checkStatus)
-    .then(response => response.json())
-  //.catch(err => console.error('Request[%s] failed:', url, err))
+    .then((response: Response) => response.json())
+  // .catch(err => console.error('Request[%s] failed:', input.url, err))
 }
 
 /**
  * get request
- * @param {String} url request url
+ * @param url request url
  */
-function get(url) {
+function get(url: string) {
   return request(
-    url,
-    Object.assign(defaultOptions, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json'
-      }
-    })
+    new Request(
+      url,
+      Object.assign(defaultOptions, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json'
+        }
+      })
+    )
   )
 }
 
 /**
  * post request with JSON data
- * @param {String} url request url
- * @param {JSON|undefined} data request json data
+ * @param url request url
+ * @param data post data
  */
-function post(url, data) {
+function post(url: string, data?: JSON) {
   return request(
-    url,
-    Object.assign(defaultOptions, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8'
-      },
-      body: JSON.stringify(data)
-    })
+    new Request(
+      url,
+      Object.assign(defaultOptions, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify(data)
+      })
+    )
   )
 }
 
 /**
  * post request with form data
- * @param {String} url request url
- * @param {String|String[][]|URLSearchParams|Record<string, string>|undefined} data request form data
+ * @param url request url
+ * @param data form data
  */
-function formPost(url, data) {
+function formPost(url: string, data?: Record<string, string>) {
   return request(
-    url,
-    Object.assign(defaultOptions, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-      },
-      body: new URLSearchParams(data)
-    })
+    new Request(
+      url,
+      Object.assign(defaultOptions, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+        },
+        body: new URLSearchParams(data)
+      })
+    )
   )
 }
 
