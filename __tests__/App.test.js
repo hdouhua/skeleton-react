@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
@@ -9,7 +10,7 @@ it('renders without crashing', () => {
     default: () => {},
     subscribe: () => {},
     dispatch: () => {},
-    getState: () => ({ ...state })
+    getState: () => ({ state })
   })
   const store = storeFake({})
 
