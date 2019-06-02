@@ -95,7 +95,7 @@ module.exports = {
       }
     })
   ],
-  devtool: isDevMode ? 'cheap-module-source-map' : 'none',
+  devtool: isDevMode ? 'cheap-module-source-map' : (SentryDsn ? 'source-map' : 'none'),
   optimization: {
     splitChunks: {
       cacheGroups: {
