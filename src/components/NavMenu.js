@@ -5,6 +5,9 @@ import './NavMenu.css'
 import LocaleSelector from './Common/LocaleSelector'
 
 export default class NavMenu extends React.Component {
+  /**
+   * @param {any} props
+   */
   constructor(props) {
     super(props)
 

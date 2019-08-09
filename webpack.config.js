@@ -36,7 +36,7 @@ module.exports = {
     main: './src/index.tsx'
   },
   output: {
-    // publicPath: isDevMode ? '/' : `${CdnUrl}static/`,
+    publicPath: isDevMode ? '/' : `${CdnUrl}static/`,
     path: path.resolve(__dirname, 'dist/static'),
     filename: isDevMode ? '[name]-[hash:7].js' : '[name]-[contenthash:7].js'
   },
@@ -82,7 +82,7 @@ module.exports = {
       templateParameters: {
         cdn_url: CdnUrl,
         asset_version: AssetVersion,
-        sentry_sdk: SentryDsn ? '<script src="https://browser.sentry-cdn.com/5.2.1/bundle.min.js" crossorigin="anonymous"></script>' : ''
+        sentry_sdk: SentryDsn ? '<script src="https://browser.sentry-cdn.com/5.6.0/bundle.min.js" integrity="sha384-9aGOmRDrtIQRcZmYbrNQmfS1dW44OCMtOlQ3JFUYCdCpxTJQ8vK+//K35AKgZh96" crossorigin="anonymous"></script>' : ''
       },
       template: path.resolve(__dirname, './src/template.html'),
       filename: isDevMode ? './index.html' : '../index.html',
