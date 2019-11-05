@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { fromJS } from 'immutable'
 import createReducer from './createReducer'
 import { ActionTypes } from '../actions/WeatherForecast'

@@ -1,4 +1,6 @@
-import React, { Component } from 'react'
+// @ts-nocheck
+/* eslint-disable no-console */
+import React, { Component, PureComponent } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
@@ -6,33 +8,71 @@ import { ActionCreators } from '../actions/WeatherForecast'
 
 class FetchData extends Component {
   componentDidMount() {
-    this.ensureDataFetched()
+    if (this.props.pageIndex.startDateIndex === undefined) {
+      this.ensureDataFetched()
+    }
   }
 
   componentDidUpdate() {
-    this.ensureDataFetched()
+    if (this.props.pageIndex.startDateIndex !== undefined) {
+      this.ensureDataFetched()
+    }
   }
 
   ensureDataFetched() {
     const startDateIndex = parseInt(this.props.match.params.startDateIndex, 10) || 0
-    if (startDateIndex !== this.props.startDateIndex) {
-      this.props.requestWeatherForecasts(startDateIndex)
+    const pageIndex = this.props.pageIndex
+    if (startDateIndex !== pageIndex.startDateIndex) {
+      // console.debug('fetch data')
+      this.props.requestWeatherForecasts(startDateIndex, pageIndex.startDateIndex)
     }
   }
 
   render() {
+    // console.debug('render FetchData')
     return (
       <div>
         <h1>Weather forecast</h1>
         <p>This component demonstrates fetching data from the server and working with URL parameters.</p>
-        {renderForecastsTable(this.props)}
-        {renderPagination(this.props)}
+        {/* {RenderForecastsTable(this.props)} */}
+        {/* <RenderForecastsTable forecasts={this.props.forecasts} /> */}
+        <ForecastsTable forecasts={this.props.forecasts} />
+        <Pagination {...this.props.pageIndex} isLoading={this.props.isLoading} />
       </div>
     )
   }
 }
 
-function renderForecastsTable(props) {
+class ForecastsTable extends PureComponent {
+  render() {
+    // console.debug('xxx')
+    return (
+      <table className="table table-striped">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Temp. (C)</th>
+            <th>Temp. (F)</th>
+            <th>Summary</th>
+          </tr>
+        </thead>
+        <tbody>
+          {this.props.forecasts.map(forecast => (
+            <tr key={forecast.dateFormatted}>
+              <td>{forecast.dateFormatted}</td>
+              <td>{forecast.temperatureC}</td>
+              <td>{forecast.temperatureF}</td>
+              <td>{forecast.summary}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )
+  }
+}
+//TODO: to delete - this is a bad example of rerendering
+function RenderForecastsTable({ forecasts }) {
+  // console.debug('xxx')
   return (
     <table className="table table-striped">
       <thead>
@@ -44,7 +84,7 @@ function renderForecastsTable(props) {
         </tr>
       </thead>
       <tbody>
-        {props.forecasts.map(forecast => (
+        {forecasts.map(forecast => (
           <tr key={forecast.dateFormatted}>
             <td>{forecast.dateFormatted}</td>
             <td>{forecast.temperatureC}</td>
@@ -57,28 +97,46 @@ function renderForecastsTable(props) {
   )
 }
 
-function renderPagination(props) {
-  const prevStartDateIndex = (props.startDateIndex || 0) - 5
-  const nextStartDateIndex = (props.startDateIndex || 0) + 5
+class Pagination extends PureComponent {
+  render() {
+    // console.debug('render yyy')
+    let { startDateIndex, pageSize, totalPage, isLoading } = this.props
 
-  return (
-    <p className="clearfix text-center">
-      <Link className="btn btn-default pull-left" to={`/fetch-data/${prevStartDateIndex}`}>
-        Previous
-      </Link>
-      <Link className="btn btn-default pull-right" to={`/fetch-data/${nextStartDateIndex}`}>
-        Next
-      </Link>
-      {props.isLoading ? <span>Loading...</span> : []}
-    </p>
-  )
+    const prevStartDateIndex = (startDateIndex || 0) - pageSize
+    const preDisabled = prevStartDateIndex < 0
+
+    const nextStartDateIndex = (startDateIndex || 0) + pageSize
+    const nextDisabled = nextStartDateIndex > pageSize * (totalPage - 1)
+
+    return (
+      <p className="clearfix text-center">
+        {!preDisabled && (
+          <Link className="btn btn-default pull-left" to={`/fetch-data/${prevStartDateIndex}`}>
+            Previous
+          </Link>
+        )}
+        {!nextDisabled && (
+          <Link className="btn btn-default pull-right" to={`/fetch-data/${nextStartDateIndex}`}>
+            Next
+          </Link>
+        )}
+        {isLoading ? <span>Loading...</span> : []}
+      </p>
+    )
+  }
 }
 
 export default connect(
   state => {
+    // console.debug('connect FetchData')
     let newState = state.demo
+
     return {
-      startDateIndex: newState.get('startDateIndex'),
+      pageIndex: {
+        pageSize: 5,
+        totalPage: 3,
+        startDateIndex: newState.get('startDateIndex')
+      },
       forecasts: newState.get('forecasts'),
       isLoading: newState.get('isLoading')
     }
